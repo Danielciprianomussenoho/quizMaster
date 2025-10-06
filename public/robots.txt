@@ -1,0 +1,6 @@
+// public/robots.txt
+User-agent: *
+Allow: /
+Disallow: /admin/
+
+Sitemap: https://quizmaster.com/sitemap.xml
