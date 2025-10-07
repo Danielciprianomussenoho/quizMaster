@@ -1,9 +1,10 @@
-// src/pages/UserProfile.jsx (ATUALIZADO)
+// src/pages/UserProfile.jsx (COMPLETO E ATUALIZADO)
 import { motion } from 'framer-motion';
-import { Trophy, Star, Target, Award, Calendar, TrendingUp, Edit , ArrowLeft} from 'lucide-react';
+import { Trophy, Star, Target, Award, Calendar, TrendingUp, Edit, ArrowLeft, Share2 } from 'lucide-react';
 import { ScoreSystem } from '../utils/ScoreSystem';
 import { useState, useEffect } from 'react';
 import EditProfileModal from '../components/EditProfileModal';
+import ShareAchievementsModal from '../components/ShareAchievementsModal';
 import { useNavigate } from 'react-router-dom';
 import SEO from '../components/SEO';
 
@@ -20,6 +21,7 @@ export default function UserProfile() {
   });
   
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
   // Carregar dados do usuário
   useEffect(() => {
@@ -48,7 +50,6 @@ export default function UserProfile() {
   };
 
   const stats = ScoreSystem.getUserStats();
-  const leaderboard = ScoreSystem.getLeaderboard();
   const recentResults = JSON.parse(localStorage.getItem('quizResults') || '[]').slice(0, 5);
 
   const StatCard = ({ icon, title, value, color }) => (
@@ -75,7 +76,10 @@ export default function UserProfile() {
       'silver-medal': { icon: '🥈', label: 'Medalha de Prata', color: 'from-slate-400 to-slate-500' },
       'bronze-medal': { icon: '🥉', label: 'Medalha de Bronze', color: 'from-amber-600 to-amber-700' },
       'hard-challenge': { icon: '💪', label: 'Desafio Difícil', color: 'from-red-500 to-pink-500' },
-      'perfect-score': { icon: '⭐', label: 'Pontuação Perfeita', color: 'from-purple-500 to-pink-500' }
+      'perfect-score': { icon: '⭐', label: 'Pontuação Perfeita', color: 'from-purple-500 to-pink-500' },
+      'quiz-master': { icon: '👑', label: 'Mestre dos Quizzes', color: 'from-purple-600 to-pink-600' },
+      'speed-demon': { icon: '⚡', label: 'Demônio da Velocidade', color: 'from-blue-500 to-cyan-500' },
+      'knowledge-seeker': { icon: '📚', label: 'Buscador do Conhecimento', color: 'from-green-500 to-emerald-500' }
     };
 
     const badge = badges[type];
@@ -95,216 +99,295 @@ export default function UserProfile() {
 
   return (
     <>
-     <SEO 
-        title="Meu Perfil - BrainMaster"
-        description="Acompanhe seu progresso, conquistas e estatísticas no BrainMaster."
+      <SEO 
+        title="Meu Perfil - QuizMaster"
+        description="Acompanhe seu progresso, conquistas e estatísticas no QuizMaster."
         keywords="perfil quiz, estatísticas, conquistas, ranking"
       />
       
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-slate-800 py-8">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        
-         {/* Back Button */}
-        <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          className="mb-8"
-        >
-          <button
-            onClick={() => navigate(-1)}
-            className="flex items-center space-x-2 text-slate-600 dark:text-slate-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors font-medium"
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-slate-800 py-8">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          
+          {/* Back Button */}
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="mb-8"
           >
-            <ArrowLeft className="w-4 h-4" />
-            <span>Voltar</span>
-          </button>
-        </motion.div>
-        
-        {/* Header do Perfil */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-white dark:bg-slate-900 rounded-2xl p-8 shadow-lg mb-8"
-        >
-          <div className="flex flex-col md:flex-row items-center justify-between">
-            <div className="flex items-center space-x-6 mb-4 md:mb-0">
-              <div className="relative">
-                <div className="w-24 h-24 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white text-3xl font-bold overflow-hidden">
-                  {userData.avatar ? (
-                    <img 
-                      src={userData.avatar} 
-                      alt="Avatar" 
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    userData.username?.charAt(0)?.toUpperCase() || 'U'
-                  )}
-                </div>
-              </div>
-              <div>
-                <h1 className="text-4xl font-bold text-slate-900 dark:text-white mb-2">
-                  {userData.username}
-                </h1>
-                <p className="text-slate-600 dark:text-slate-300 text-lg mb-2">
-                  {userData.bio}
-                </p>
-                <p className="text-slate-500 dark:text-slate-400 text-sm">
-                  {userData.totalQuizzes || 0} quizzes completados • Média de {userData.averageScore || 0}%
-                  {userData.email && ` • ${userData.email}`}
-                </p>
-              </div>
-            </div>
-            
-            <motion.button
-              onClick={() => setIsEditModalOpen(true)}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-3 rounded-xl font-semibold hover:shadow-lg transition-all flex items-center space-x-2"
+            <button
+              onClick={() => navigate(-1)}
+              className="flex items-center space-x-2 text-slate-600 dark:text-slate-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors font-medium"
             >
-              <Edit className="w-4 h-4" />
-              <span>Editar Perfil</span>
-            </motion.button>
-          </div>
-        </motion.div>
-
-        {/* Grid de Estatísticas */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <StatCard
-            icon={<Trophy className="w-6 h-6" />}
-            title="Pontuação Média"
-            value={`${userData.averageScore || 0}%`}
-            color="from-yellow-500 to-amber-500"
-          />
-          <StatCard
-            icon={<Target className="w-6 h-6" />}
-            title="Quizzes Completos"
-            value={userData.totalQuizzes || 0}
-            color="from-blue-500 to-cyan-500"
-          />
-          <StatCard
-            icon={<TrendingUp className="w-6 h-6" />}
-            title="Melhor Pontuação"
-            value={`${Math.max(...(JSON.parse(localStorage.getItem('quizResults') || '[]').map(r => r.percentage) || [0]))}%`}
-            color="from-green-500 to-emerald-500"
-          />
-          <StatCard
-            icon={<Award className="w-6 h-6" />}
-            title="Conquistas"
-            value={userData.badges?.length || 0}
-            color="from-purple-500 to-pink-500"
-          />
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Badges Collection */}
-          <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-lg"
-          >
-            <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-6 flex items-center">
-              <Award className="w-6 h-6 mr-2 text-purple-500" />
-              Conquistas
-            </h2>
-            <div className="flex flex-wrap gap-4">
-              {userData.badges?.length > 0 ? (
-                userData.badges.map((badge, index) => (
-                  <BadgeIcon key={index} type={badge} />
-                ))
-              ) : (
-                <p className="text-slate-500 dark:text-slate-400 text-center w-full py-8">
-                  Complete quizzes para desbloquear conquistas!
-                </p>
-              )}
-            </div>
+              <ArrowLeft className="w-4 h-4" />
+              <span>Voltar</span>
+            </button>
           </motion.div>
-
-          {/* Recent Activity */}
-          <motion.div
-            initial={{ opacity: 0, x: 30 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-lg"
-          >
-            <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-6 flex items-center">
-              <Calendar className="w-6 h-6 mr-2 text-blue-500" />
-              Atividade Recente
-            </h2>
-            <div className="space-y-4">
-              {recentResults.length > 0 ? (
-                recentResults.map((result, index) => (
-                  <div key={index} className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800 rounded-lg">
-                    <div>
-                      <h3 className="font-semibold text-slate-900 dark:text-white capitalize">{result.category}</h3>
-                      <p className="text-sm text-slate-600 dark:text-slate-300">
-                        {result.difficulty} • {new Date(result.date).toLocaleDateString('pt-BR')}
-                      </p>
-                    </div>
-                    <div className={`px-3 py-1 rounded-full font-bold ${
-                      result.percentage >= 80 ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' :
-                      result.percentage >= 60 ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200' :
-                      'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
-                    }`}>
-                      {result.percentage}%
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <p className="text-slate-500 dark:text-slate-400 text-center py-8">
-                  Nenhuma atividade recente
-                </p>
-              )}
-            </div>
-          </motion.div>
-        </div>
-
-        {/* Categorias Performance */}
-        {stats.categories && Object.keys(stats.categories).length > 0 && (
+          
+          {/* Header do Perfil */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-lg mt-8"
+            className="bg-white dark:bg-slate-900 rounded-2xl p-8 shadow-lg mb-8"
           >
-            <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">Desempenho por Categoria</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {Object.entries(stats.categories).map(([category, data]) => (
-                <div key={category} className="p-4 bg-slate-50 dark:bg-slate-800 rounded-lg">
-                  <h3 className="font-semibold text-slate-900 dark:text-white capitalize">{category}</h3>
-                  <div className="flex justify-between items-center mt-2">
-                    <span className="text-sm text-slate-600 dark:text-slate-300">
-                      {data.played} {data.played === 1 ? 'quiz' : 'quizzes'}
-                    </span>
-                    <span className={`font-bold ${
-                      data.average >= 80 ? 'text-green-600' :
-                      data.average >= 60 ? 'text-yellow-600' :
-                      'text-red-600'
-                    }`}>
-                      {data.average}%
-                    </span>
-                  </div>
-                  <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2 mt-2">
-                    <div 
-                      className={`h-2 rounded-full ${
-                        data.average >= 80 ? 'bg-green-500' :
-                        data.average >= 60 ? 'bg-yellow-500' :
-                        'bg-red-500'
-                      }`}
-                      style={{ width: `${data.average}%` }}
-                    />
+            <div className="flex flex-col md:flex-row items-center justify-between">
+              <div className="flex items-center space-x-6 mb-4 md:mb-0">
+                <div className="relative">
+                  <div className="w-24 h-24 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white text-3xl font-bold overflow-hidden">
+                    {userData.avatar ? (
+                      <img 
+                        src={userData.avatar} 
+                        alt="Avatar" 
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      userData.username?.charAt(0)?.toUpperCase() || 'U'
+                    )}
                   </div>
                 </div>
-              ))}
+                <div>
+                  <h1 className="text-4xl font-bold text-slate-900 dark:text-white mb-2">
+                    {userData.username}
+                  </h1>
+                  <p className="text-slate-600 dark:text-slate-300 text-lg mb-2">
+                    {userData.bio}
+                  </p>
+                  <p className="text-slate-500 dark:text-slate-400 text-sm">
+                    {userData.totalQuizzes || 0} quizzes completados • Média de {userData.averageScore || 0}%
+                    {userData.email && ` • ${userData.email}`}
+                  </p>
+                </div>
+              </div>
+              
+              <div className="flex flex-col sm:flex-row gap-3">
+                <motion.button
+                  onClick={() => setIsShareModalOpen(true)}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="bg-gradient-to-r from-blue-500 to-cyan-500 text-white px-6 py-3 rounded-xl font-semibold hover:shadow-lg transition-all flex items-center space-x-2"
+                >
+                  <Share2 className="w-4 h-4" />
+                  <span>Compartilhar</span>
+                </motion.button>
+                
+                <motion.button
+                  onClick={() => setIsEditModalOpen(true)}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-3 rounded-xl font-semibold hover:shadow-lg transition-all flex items-center space-x-2"
+                >
+                  <Edit className="w-4 h-4" />
+                  <span>Editar Perfil</span>
+                </motion.button>
+              </div>
             </div>
           </motion.div>
-        )}
-      </div>
 
-      {/* Modal de Edição de Perfil */}
-      <EditProfileModal
-        isOpen={isEditModalOpen}
-        onClose={() => setIsEditModalOpen(false)}
-        currentUser={userData}
-        onSave={handleSaveProfile}
-      />
-    </div>
+          {/* Grid de Estatísticas */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <StatCard
+              icon={<Trophy className="w-6 h-6" />}
+              title="Pontuação Média"
+              value={`${userData.averageScore || 0}%`}
+              color="from-yellow-500 to-amber-500"
+            />
+            <StatCard
+              icon={<Target className="w-6 h-6" />}
+              title="Quizzes Completos"
+              value={userData.totalQuizzes || 0}
+              color="from-blue-500 to-cyan-500"
+            />
+            <StatCard
+              icon={<TrendingUp className="w-6 h-6" />}
+              title="Melhor Pontuação"
+              value={`${Math.max(...(JSON.parse(localStorage.getItem('quizResults') || '[]').map(r => r.percentage) || [0]))}%`}
+              color="from-green-500 to-emerald-500"
+            />
+            <StatCard
+              icon={<Award className="w-6 h-6" />}
+              title="Conquistas"
+              value={userData.badges?.length || 0}
+              color="from-purple-500 to-pink-500"
+            />
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Badges Collection */}
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-lg"
+            >
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center">
+                  <Award className="w-6 h-6 mr-2 text-purple-500" />
+                  Minhas Conquistas
+                </h2>
+                <span className="bg-purple-100 dark:bg-purple-900 text-purple-600 dark:text-purple-300 px-3 py-1 rounded-full text-sm font-medium">
+                  {userData.badges?.length || 0} conquistas
+                </span>
+              </div>
+              <div className="flex flex-wrap gap-4">
+                {userData.badges?.length > 0 ? (
+                  userData.badges.map((badge, index) => (
+                    <BadgeIcon key={index} type={badge} />
+                  ))
+                ) : (
+                  <div className="text-center w-full py-8">
+                    <Award className="w-16 h-16 text-slate-300 dark:text-slate-600 mx-auto mb-4" />
+                    <p className="text-slate-500 dark:text-slate-400 mb-4">
+                      Complete quizzes para desbloquear conquistas!
+                    </p>
+                    <button 
+                      onClick={() => navigate('/')}
+                      className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-2 rounded-lg font-semibold hover:shadow-lg transition-all"
+                    >
+                      Fazer um Quiz
+                    </button>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+
+            {/* Recent Activity */}
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-lg"
+            >
+              <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-6 flex items-center">
+                <Calendar className="w-6 h-6 mr-2 text-blue-500" />
+                Atividade Recente
+              </h2>
+              <div className="space-y-4">
+                {recentResults.length > 0 ? (
+                  recentResults.map((result, index) => (
+                    <div key={index} className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800 rounded-lg">
+                      <div>
+                        <h3 className="font-semibold text-slate-900 dark:text-white capitalize">{result.category}</h3>
+                        <p className="text-sm text-slate-600 dark:text-slate-300">
+                          {result.difficulty} • {new Date(result.date).toLocaleDateString('pt-BR')}
+                        </p>
+                      </div>
+                      <div className={`px-3 py-1 rounded-full font-bold ${
+                        result.percentage >= 80 ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' :
+                        result.percentage >= 60 ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200' :
+                        'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
+                      }`}>
+                        {result.percentage}%
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-center py-8">
+                    <Calendar className="w-16 h-16 text-slate-300 dark:text-slate-600 mx-auto mb-4" />
+                    <p className="text-slate-500 dark:text-slate-400 mb-4">
+                      Nenhuma atividade recente
+                    </p>
+                    <button 
+                      onClick={() => navigate('/')}
+                      className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-2 rounded-lg font-semibold hover:shadow-lg transition-all"
+                    >
+                      Fazer um Quiz
+                    </button>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          </div>
+
+          {/* Categorias Performance */}
+          {stats.categories && Object.keys(stats.categories).length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-lg mt-8"
+            >
+              <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">
+                Desempenho por Categoria
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {Object.entries(stats.categories).map(([category, data]) => (
+                  <div key={category} className="p-4 bg-slate-50 dark:bg-slate-800 rounded-lg">
+                    <h3 className="font-semibold text-slate-900 dark:text-white capitalize mb-3">
+                      {category}
+                    </h3>
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="text-sm text-slate-600 dark:text-slate-300">
+                        {data.played} {data.played === 1 ? 'quiz' : 'quizzes'}
+                      </span>
+                      <span className={`font-bold ${
+                        data.average >= 80 ? 'text-green-600 dark:text-green-400' :
+                        data.average >= 60 ? 'text-yellow-600 dark:text-yellow-400' :
+                        'text-red-600 dark:text-red-400'
+                      }`}>
+                        {data.average}%
+                      </span>
+                    </div>
+                    <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
+                      <div 
+                        className={`h-2 rounded-full transition-all duration-500 ${
+                          data.average >= 80 ? 'bg-green-500' :
+                          data.average >= 60 ? 'bg-yellow-500' :
+                          'bg-red-500'
+                        }`}
+                        style={{ width: `${data.average}%` }}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          )}
+
+          {/* Call to Action */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl p-8 text-white text-center mt-8"
+          >
+            <h3 className="text-2xl font-bold mb-4">
+              Quer melhorar seu ranking?
+            </h3>
+            <p className="mb-6 opacity-90">
+              Faça mais quizzes, desbloqueie conquistas e suba no ranking global!
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <motion.button
+                onClick={() => navigate('/')}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="bg-white text-purple-600 px-6 py-3 rounded-xl font-bold hover:shadow-lg transition-all"
+              >
+                Fazer Quiz Agora
+              </motion.button>
+              <motion.button
+                onClick={() => navigate('/ranking')}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="bg-transparent border-2 border-white text-white px-6 py-3 rounded-xl font-bold hover:bg-white hover:bg-opacity-10 transition-all"
+              >
+                Ver Ranking
+              </motion.button>
+            </div>
+          </motion.div>
+        </div>
+
+        {/* Modal de Edição de Perfil */}
+        <EditProfileModal
+          isOpen={isEditModalOpen}
+          onClose={() => setIsEditModalOpen(false)}
+          currentUser={userData}
+          onSave={handleSaveProfile}
+        />
+
+        {/* Modal de Compartilhar Conquistas */}
+        <ShareAchievementsModal
+          isOpen={isShareModalOpen}
+          onClose={() => setIsShareModalOpen(false)}
+          userData={userData}
+          achievements={userData.badges}
+        />
+      </div>
     </>
   );
 }

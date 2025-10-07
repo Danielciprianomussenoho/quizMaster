@@ -1,6 +1,6 @@
 // src/pages/DMCA.jsx
 import { motion } from 'framer-motion';
-import { Shield, Copyright, AlertTriangle, Mail } from 'lucide-react';
+import { Mail, Shield, Copyright, AlertTriangle, Phone, MapPin, Send, Clock, Users, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export default function DMCA() {

@@ -1,4 +1,4 @@
-// src/components/Footer.jsx (ATUALIZADO)
+// src/components/Footer.jsx (COMPLETO E CORRIGIDO)
 import { motion } from 'framer-motion';
 import { 
   Heart, 
@@ -48,10 +48,11 @@ export default function Footer() {
       { name: 'Todos os Quizzes', onClick: () => handleAnchorClick('categories') },
       { name: 'Quizzes em Alta', onClick: () => handleAnchorClick('trending') },
       { name: 'Categorias', onClick: () => handleAnchorClick('categories') },
-      { name: 'Ranking', onClick: () => handleNavigation('/profile') }
+      { name: 'Ranking', onClick: () => handleNavigation('/ranking') }
     ],
     company: [
       { name: 'Sobre Nós', onClick: () => handleNavigation('/about') },
+      { name: 'Blog Educacional', onClick: () => handleNavigation('/blog') },
       { name: 'Nossa Equipe', onClick: () => handleNavigation('/about') },
       { name: 'Carreiras', onClick: () => window.open('#', '_blank') },
       { name: 'Contato', onClick: () => handleNavigation('/contact') }
@@ -60,12 +61,12 @@ export default function Footer() {
       { name: 'Política de Privacidade', onClick: () => handleNavigation('/privacy') },
       { name: 'Termos de Uso', onClick: () => handleNavigation('/terms') },
       { name: 'DMCA', onClick: () => handleNavigation('/dmca') },
-      { name: 'Cookies', onClick: () => handleNavigation('/privacy') }
+      { name: 'Cookies', onClick: () => handleNavigation('/cookies') }
     ],
     support: [
-      { name: 'Central de Ajuda', onClick: () => handleNavigation('/contact') },
-      { name: 'Reportar Problema', onClick: () => handleNavigation('/contact') },
-      { name: 'Sugerir Quiz', onClick: () => handleNavigation('/contact') },
+      { name: 'Central de Ajuda', onClick: () => handleNavigation('/help') },
+      { name: 'Reportar Problema', onClick: () => handleNavigation('/report-problem') },
+      { name: 'Sugerir Quiz', onClick: () => handleNavigation('/suggest-quiz') },
       { name: 'Feedback', onClick: () => handleNavigation('/contact') }
     ]
   };
